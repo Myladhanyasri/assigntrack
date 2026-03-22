@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Success — AssignTrack{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-5 text-center">
+
+    <div class="card shadow-sm border-0 rounded-4 py-5">
+      <div class="card-body">
+
+        <!-- Animated checkmark icon -->
+        <div class="text-success mb-3" id="successIcon">
+          <i class="bi bi-check-circle-fill" style="font-size: 4rem;"></i>
+        </div>
+
+        <h2 class="fw-bold text-success mb-2">
+          {% if action == "added" %}
+            Assignment Added!
+          {% elif action == "updated" %}
+            Assignment Updated!
+          {% else %}
+            Done!
+          {% endif %}
+        </h2>
+
+        <p class="text-muted mb-4">
+          {# Jinja2 conditional text #}
+          {% if name %}
+            "<strong>{{ name }}</strong>" has been
+            {% if action == "added" %}added to your dashboard{% else %}updated successfully{% endif %}.
+          {% else %}
+            Your action was completed successfully.
+          {% endif %}
+        </p>
+
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{{ url_for('index') }}" class="btn btn-primary fw-semibold px-4">
+            <i class="bi bi-house me-2"></i>Go to Dashboard
+          </a>
+          <a href="{{ url_for('index') }}"
+             class="btn btn-outline-primary fw-semibold px-4">
+            <i class="bi bi-plus-circle me-2"></i>Add Another
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// jQuery: animate the icon on page load (hide/show effect)
+$(document).ready(function () {
+  $("#successIcon").hide().fadeIn(800);
+});
+</script>
+{% endblock %}

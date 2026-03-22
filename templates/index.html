@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}AssignTrack — Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO SECTION ── -->
+<section class="bg-primary text-white rounded-4 p-4 mb-4 shadow">
+  <div class="row align-items-center g-3">
+    <div class="col-md-7">
+      <h1 class="fw-bold mb-1">
+        <i class="bi bi-check2-square me-2"></i>Assignment Dashboard
+      </h1>
+      <p class="mb-0 opacity-75">Track deadlines, manage tasks, never miss a submission.</p>
+    </div>
+    <div class="col-md-5">
+      <!-- Progress bar — values passed from Flask via Jinja2 -->
+      <div class="bg-white bg-opacity-10 rounded-3 p-3">
+        <div class="d-flex justify-content-between mb-1">
+          <small>Overall Progress</small>
+          <small class="fw-bold">{{ percent }}%</small>
+        </div>
+        <div class="progress" style="height: 10px;">
+          <div class="progress-bar bg-warning" style="width: {{ percent }}%;"></div>
+        </div>
+        <div class="row text-center mt-3">
+          <div class="col-4">
+            <div class="fw-bold fs-5">{{ total }}</div>
+            <small class="opacity-75">Total</small>
+          </div>
+          <div class="col-4">
+            <div class="fw-bold fs-5 text-warning">{{ pending }}</div>
+            <small class="opacity-75">Pending</small>
+          </div>
+          <div class="col-4">
+            <div class="fw-bold fs-5 text-success">{{ completed }}</div>
+            <small class="opacity-75">Done</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MAIN LAYOUT: Form (left) + Table (right) ── -->
+<div class="row g-4">
+
+  <!-- ── ADD ASSIGNMENT FORM ── -->
+  <div class="col-lg-4" id="addSection">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-header bg-primary text-white rounded-top-4">
+        <h5 class="mb-0"><i class="bi bi-plus-lg me-2"></i>Add New Assignment</h5>
+      </div>
+      <div class="card-body">
+
+        <!--
+          ACTION="/submit" → Flask route that handles the form
+          METHOD="POST"    → Sends data to server
+        -->
+        <form action="{{ url_for('submit') }}" method="POST" id="addForm" novalidate>
+
+          <div class="mb-3">
+            <label for="title" class="form-label fw-semibold">
+              Title <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="title" name="title"
+                   placeholder="e.g. DBMS Lab Report"/>
+            <!-- Error shown by jQuery -->
+            <div class="invalid-feedback" id="titleErr">Please enter a title.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="subject" class="form-label fw-semibold">
+              Subject <span class="text-danger">*</span>
+            </label>
+            <input type="text" class="form-control" id="subject" name="subject"
+                   placeholder="e.g. Data Structures"/>
+            <div class="invalid-feedback" id="subjectErr">Please enter a subject.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="due_date" class="form-label fw-semibold">
+              Due Date <span class="text-danger">*</span>
+            </label>
+            <input type="date" class="form-control" id="due_date" name="due_date"/>
+            <div class="invalid-feedback" id="dateErr">Please select a due date.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="priority" class="form-label fw-semibold">Priority</label>
+            <select class="form-select" id="priority" name="priority">
+              <option value="Low">🟢 Low</option>
+              <option value="Medium" selected>🟡 Medium</option>
+              <option value="High">🔴 High</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label fw-semibold">Description</label>
+            <textarea class="form-control" id="description" name="description"
+                      rows="2" placeholder="Optional details..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 fw-semibold">
+            <i class="bi bi-plus-circle me-2"></i>Add Assignment
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ASSIGNMENT LIST ── -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0 rounded-4">
+      <div class="card-header bg-white rounded-top-4 border-bottom d-flex flex-wrap gap-2 align-items-center">
+
+        <!-- Filter Buttons -->
+        <span class="fw-semibold me-1">Filter:</span>
+        <button class="btn btn-sm btn-primary filter-btn active" data-filter="all">All</button>
+        <button class="btn btn-sm btn-outline-warning filter-btn" data-filter="pending">Pending</button>
+        <button class="btn btn-sm btn-outline-success filter-btn" data-filter="completed">Completed</button>
+        <button class="btn btn-sm btn-outline-danger filter-btn" data-filter="urgent">🔴 Urgent</button>
+
+        <!-- Search Box -->
+        <div class="ms-auto">
+          <input type="text" class="form-control form-control-sm" id="searchInput"
+                 placeholder="🔍 Search..." style="width:160px;"/>
+        </div>
+      </div>
+
+      <div class="card-body p-0">
+
+        <!-- ── EMPTY STATE ── -->
+        {% if assignments|length == 0 %}
+          <div class="text-center py-5 text-muted" id="emptyMsg">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            <p class="mb-0">No assignments yet. Add one using the form!</p>
+          </div>
+        {% else %}
+
+        <!-- ── ASSIGNMENTS TABLE (Jinja2 loop) ── -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0" id="assignTable">
+            <thead class="table-light">
+              <tr>
+                <th>Title</th>
+                <th>Subject</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              {# Jinja2 for loop — iterate over assignments passed from Flask #}
+              {% for a in assignments %}
+              <tr class="assign-row"
+                  data-status="{{ a.status }}"
+                  data-priority="{{ a.priority }}"
+                  data-title="{{ a.title | lower }}"
+                  data-subject="{{ a.subject | lower }}">
+
+                <td class="fw-semibold {% if a.status == 'completed' %}text-decoration-line-through text-muted{% endif %}">
+                  {{ a.title }}
+                </td>
+
+                <td>
+                  <span class="badge bg-secondary">{{ a.subject }}</span>
+                </td>
+
+                <td>
+                  {# Overdue check using Jinja2 #}
+                  {% set today = namespace(val="") %}
+                  <span class="{% if a.status != 'completed' and a.due_date < now %}text-danger fw-bold{% endif %}">
+                    {{ a.due_date }}
+                    {% if a.status != 'completed' and a.due_date < now %}
+                      <i class="bi bi-exclamation-triangle-fill text-danger ms-1" title="Overdue"></i>
+                    {% endif %}
+                  </span>
+                </td>
+
+                <td>
+                  {# Priority badge — Jinja2 conditional #}
+                  {% if a.priority == 'High' %}
+                    <span class="badge bg-danger">🔴 High</span>
+                  {% elif a.priority == 'Medium' %}
+                    <span class="badge bg-warning text-dark">🟡 Medium</span>
+                  {% else %}
+                    <span class="badge bg-success">🟢 Low</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if a.status == 'completed' %}
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Done</span>
+                  {% else %}
+                    <span class="badge bg-warning text-dark"><i class="bi bi-clock me-1"></i>Pending</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-center">
+                  <div class="btn-group btn-group-sm">
+                    <!-- Toggle button → Flask /toggle/<id> -->
+                    <a href="{{ url_for('toggle', aid=a.id) }}"
+                       class="btn {% if a.status == 'completed' %}btn-outline-warning{% else %}btn-outline-success{% endif %}"
+                       title="{% if a.status == 'completed' %}Mark Pending{% else %}Mark Complete{% endif %}">
+                      <i class="bi {% if a.status == 'completed' %}bi-arrow-counterclockwise{% else %}bi-check-lg{% endif %}"></i>
+                    </a>
+                    <!-- Edit → Flask /edit/<id> -->
+                    <a href="{{ url_for('edit', aid=a.id) }}"
+                       class="btn btn-outline-primary" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <!-- Delete → Flask /delete/<id> with jQuery confirm -->
+                    <a href="{{ url_for('delete', aid=a.id) }}"
+                       class="btn btn-outline-danger delete-btn" title="Delete">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </div>
+                </td>
+
+              </tr>
+              {% endfor %}
+
+            </tbody>
+          </table>
+        </div>
+        <!-- No results message (shown by jQuery search) -->
+        <div class="text-center py-4 text-muted d-none" id="noResults">
+          <i class="bi bi-search me-2"></i>No assignments match your search.
+        </div>
+
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Pass today's date to Jinja2 comparison via JS (for overdue highlight)
+  // The real overdue check is done in Jinja2 using the 'now' variable from Flask.
+</script>
+{% endblock %}
