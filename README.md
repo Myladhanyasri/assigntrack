@@ -10,13 +10,13 @@ A full-stack web application that helps students manage academic assignments, tr
 
 ---
 
-## 🌐 Live Demo
+##  Live Demo
 
-🔗 [https://assigntrack.onrender.com](https://assigntrack.onrender.com)
+🔗 [https://assigntrack.onrender.com](https://assigntrack-o296.onrender.com/)
 
 ---
 
-## 📸 Screenshots
+## Screenshots
 
 > Dashboard View
 
@@ -24,23 +24,23 @@ A full-stack web application that helps students manage academic assignments, tr
 
 ---
 
-## ✨ Features
+##  Features
 
-- ➕ Add assignment with title, subject, due date, priority and description
-- ✏️ Edit any existing assignment
-- 🗑️ Delete assignment with confirmation popup
-- ✅ Mark assignment as completed or pending
-- 🔴 Overdue detection — highlights past-due assignments in red
-- 📊 Progress bar showing overall completion percentage
-- 🔍 Live search by title or subject
-- 🔽 Filter by All / Pending / Completed / Urgent (High priority)
-- 💬 Flash messages for user feedback (success / error)
-- ✅ Client-side validation using jQuery
-- ✅ Server-side validation using Flask
+-  Add assignment with title, subject, due date, priority and description
+-  Edit any existing assignment
+-  Delete assignment with confirmation popup
+-  Mark assignment as completed or pending
+-  Overdue detection — highlights past-due assignments in red
+-  Progress bar showing overall completion percentage
+-  Live search by title or subject
+-  Filter by All / Pending / Completed / Urgent (High priority)
+-  Flash messages for user feedback (success / error)
+-  Client-side validation using jQuery
+-  Server-side validation using Flask
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 | Layer | Technology |
 |---|---|
@@ -53,7 +53,7 @@ A full-stack web application that helps students manage academic assignments, tr
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 ```
 assigntrack/
 ├── app.py                  ← Flask backend — all routes and database logic
@@ -89,7 +89,7 @@ assigntrack/
 
 ---
 
-## 🗄️ Database Schema
+##  Database Schema
 ```sql
 CREATE TABLE assignments (
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,7 +105,7 @@ CREATE TABLE assignments (
 
 ---
 
-## ⚙️ Setup Instructions
+##  Setup Instructions
 
 ### 1. Clone the repository
 ```bash
@@ -128,11 +128,11 @@ python app.py
 http://127.0.0.1:5000
 ```
 
-> ✅ The SQLite database `assignments.db` is created automatically on first run.
+>  The SQLite database `assignments.db` is created automatically on first run.
 
 ---
 
-## 📊 How It Works (Workflow)
+##  How It Works (Workflow)
 ```
 User fills form
       ↓
@@ -153,11 +153,11 @@ Flask SELECT all assignments → Jinja2 renders updated table ✅
 
 ---
 
-## 👤 Author
+## Author
 
 - **Name:** Myladha Nyasri
 - **GitHub:** [@Myladhanyasri](https://github.com/Myladhanyasri)
-- **Project:** Full Stack Web Development — College Project
+- **Project:** Full Stack Web Development Project
 - **Tech Stack:** HTML · CSS · Bootstrap · jQuery · Flask · SQLite
 
 ---
