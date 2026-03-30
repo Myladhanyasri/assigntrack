@@ -1,4 +1,4 @@
-# 📚 AssignTrack — Web-Based Academic Assignment Tracking System
+# 📚 AssignTrack - Web-Based Academic Assignment Tracking System
 
 ![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
 ![Flask](https://img.shields.io/badge/Flask-2.x-black?logo=flask)
@@ -14,15 +14,6 @@ A full-stack web application that helps students manage academic assignments, tr
 
 🔗 [https://assigntrack.onrender.com](https://assigntrack-o296.onrender.com/)
 
----
-
-## Screenshots
-
-> Dashboard View
-
-![Dashboard](static/images/dashboard.png)
-
----
 
 ##  Features
 
